@@ -1,5 +1,11 @@
+### Imports
+## Standard library
+import zlib
 from datetime import datetime
 import calendar
+
+## Internal
+import buffer.QuineBuffer as QuineBuffer
 
 def gz(filename = 'quine'):
     ### Create header data
@@ -39,8 +45,84 @@ def gz(filename = 'quine'):
     head.append(0x00) # zero terminate filename field
 
     ## Create header
-    head_bytes = bytearray(head)
+    head = bytearray(head)
 
-    return head_bytes
+    return zlib.compress(head)
+
+def generic(head, tail, head_deflate, tail_deflate):
+    """Implementation of Russ Cox's self-expanding Lempel-Ziv program"""
+
+    ### Create self-expanding byte sequence
+    ## Initialize buffer and program constants
+    buf = QuineBuffer()
+    unit = 5 # size of opcodes in bytes
+    incremented_prefix_len = len(head) + unit
+    incremented_suffix_len = len(tail) + unit
+
+    ## P
+    buf.write(head)
+
+    ## L[P+1] P L[P+1]
+    buf.lit(incremented_prefix_len)
+    buf.write(head)
+    buf.lit(incremented_prefix_len)
+
+    ## R[P+1]
+    buf.rep(incremented_prefix_len)
+
+    ## L[1] R[P+1]
+    buf.lit(unit)
+    buf.rep(incremented_prefix_len)
+
+    ## L[1] L[1]
+    buf.lit(unit)
+    buf.lit(unit)
+
+	## L[4] R[P+1] L[1] L[1] L[4]
+    buf.lit(4*unit)
+    buf.rep(incremented_prefix_len)
+    buf.lit(unit)
+    buf.lit(unit)
+    buf.lit(4*unit)
+
+    ## R[4]
+    buf.rep(4*unit)
+
+    ## L[4] R[4] L[4] R[4] L[4]
+    buf.lit(4*unit)
+    buf.rep(4*unit)
+    buf.lit(4*unit)
+    buf.rep(4*unit)
+    buf.lit(4*unit)
+
+    ## R[4]
+    buf.rep(4*unit)
+
+    ## L[4] R[4] L[0] L[0] L[S+1]
+    buf.lit(4*unit)
+    buf.rep(4*unit)
+    buf.lit(0)
+    buf.lit(0)
+    buf.lit(incremented_suffix_len)
+
+    ## R[4]
+    buf.rep(4*unit)
+
+    ## L[0] L[0] L[S+1] R[S+1] S
+    buf.lit(0)
+    buf.lit(0)
+    buf.lit(incremented_suffix_len)
+    buf.rep(incremented_suffix_len)
+    buf.lit(0)
+    buf.write(ztail)
+
+    ## R[S+1]
+    buf.rep(incremented_suffix_len)
+
+    ## S
+    buf.lit(0)
+    buf.write(ztail)
+
+    return buf.toBytesArray()
 
 print(gz())
