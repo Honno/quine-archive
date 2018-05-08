@@ -104,6 +104,16 @@ class QuineBuffer:
 
         return bitstring.Bits(uint=literal, length=bits)
 
+    def _zero_pad(self, binary):
+        """Zero pad a given BitArray to byte boundary"""
+
+        length = len(binary)
+        zeroes = 8 - (length % 8)
+        for _ in zeroes:
+            binary.append('0b0')
+
+        return binary
+
     def bytes_array(self):
         """Return bytes array"""
 
