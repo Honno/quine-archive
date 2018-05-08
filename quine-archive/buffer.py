@@ -2,13 +2,18 @@ import io
 import binascii
 import bitstring
 
-### Wrapper for bytes buffer that has utilities for creating quines
 class QuineBuffer:
+    """Wrapper for bytes buffer that has utilities for creating quines"""
+
     def __init__(self):
+        """Initialize bytes buffer and set final block to false"""
+
         self._bytes = io.BytesIO()
         self.final = False
 
     def write(self, data):
+        """Write 8-bit int or bytes-like object to buffer"""
+
         if isinstance(data, int):
             if data < 2 ** 8:
                 self._write(data.to_bytes(1, byteorder='big'))
@@ -18,6 +23,8 @@ class QuineBuffer:
             self._write(data)
 
     def _write(self, binary):
+        """Write bytes-like object to buffer"""
+
         self._bytes.write(binary)
 
     def lit(self, n): # literal
@@ -56,13 +63,24 @@ class QuineBuffer:
         head.append('0b1' if self.final else '0b0') # final block bit (BFINAL)
         head.append('0b01') # fixed huffman code (BTYPE)
 
+        ### Write repeat opcodes
+
     def _ones_complement(self, binary):
         """Find one's complement of bytes given"""
 
+        # Find number of bytes
         size = len(binary)
+
+        # Convert binary to integer
         binary_int = int(binary.hex(), 16)
+
+        # One's complement in integer form
         binary_int_swapped = binary_int ^ ((2 ** (size * 8))  - 1)
+
+        # Return one's complement integer in bytes
         return binary_int_swapped.to_bytes(size, byteorder='big')
 
     def bytes_array(self):
+        """Return bytes array"""
+
         return self._bytes.getvalue()
