@@ -80,6 +80,30 @@ class QuineBuffer:
         # Return one's complement integer in bytes
         return binary_int_swapped.to_bytes(size, byteorder='big')
 
+    def _fixed_codes(self, length):
+        """"Find respective fixed Huffman code for given length (RFC section 3.2.6.)"""
+
+        if 0 <= length <= 143:
+            literal = 0b00110000 + length
+            bits = 8
+
+        elif 144 <= length <= 255:
+            literal = 0b110010000 + length - 144
+            bits = 9
+
+        elif 256 <= length <= 279:
+            literal = 0b0000000 + length - 256
+            bits = 7
+
+        elif 280 <= length <= 287:
+            literal = 0b11000000 + length - 280
+            bits = 8
+
+        else:
+            raise ValueError("Only literal values between 0 and 287 are accepted")
+
+        return bitstring.Bits(uint=literal, length=bits)
+
     def bytes_array(self):
         """Return bytes array"""
 
