@@ -37,7 +37,7 @@ class QuineBuffer:
         ## Define header
         head.append('0b1' if self.final else '0b0') # final block bit (BFINAL)
         head.append('0b00') # literal section (BTYPE)
-        head.append('0b00000') # zero padding to byte boundary
+        head = self._zero_pad(head) # zero padding to byte boundary
 
         ## Append header
         head_binary = head.int # integer representation
@@ -55,7 +55,7 @@ class QuineBuffer:
     def rep(self, n): # repeat
         """Write a repeat block to buffer"""
 
-        ### Write block header
+        ### Create block header
         ## Initialize bit array
         head = BitArray()
 
@@ -63,7 +63,27 @@ class QuineBuffer:
         head.append('0b1' if self.final else '0b0') # final block bit (BFINAL)
         head.append('0b01') # fixed huffman code (BTYPE)
 
-        ### Write repeat opcodes
+        ### Create repeat opcodes
+        ## Initialize bit array
+        body = BitArray()
+
+        ## Get associated huffman code
+        length= self._fixed_code(n / 2)
+        distance = self._fixed_code(n)
+
+        ## Append repeat opcode twice
+        body.append(length)
+        body.append(distance)
+        body.append(length)
+        body.append(distance)
+
+        ### Write block
+        ## Add everything together
+        data = head.append(body)
+        data = self._zero_pad(data)
+
+        ## Write to buffer
+        self.write(data)
 
     def _ones_complement(self, binary):
         """Find one's complement of bytes given"""
@@ -80,7 +100,7 @@ class QuineBuffer:
         # Return one's complement integer in bytes
         return binary_int_swapped.to_bytes(size, byteorder='big')
 
-    def _fixed_codes(self, length):
+    def _fixed_code(self, length):
         """"Find respective fixed Huffman code for given length (RFC section 3.2.6.)"""
 
         if 0 <= length <= 143:
@@ -108,8 +128,8 @@ class QuineBuffer:
         """Zero pad a given BitArray to byte boundary"""
 
         length = len(binary)
-        zeroes = 8 - (length % 8)
-        for _ in zeroes:
+        zeroes_left = 8 - (length % 8)
+        for _ in zeroes_left:
             binary.append('0b0')
 
         return binary

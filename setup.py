@@ -1,10 +1,9 @@
 from setuptools import setup, find_packages
 
-from tanew.__init__ import __version__ as VERSION
 
 setup(
     name='quine-archive',
-    version=VERSION,
+    version=0.1,
     description="hmmm",
     long_description="tbd",
     license='MIT',

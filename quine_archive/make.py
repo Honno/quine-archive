@@ -5,7 +5,7 @@ from datetime import datetime
 import calendar
 
 ## Internal
-import buffer.QuineBuffer as QuineBuffer
+import quine_archive.quine_buffer
 
 def gz(filename = 'quine'):
     ### Create header data
@@ -125,4 +125,4 @@ def generic(head, tail, head_deflate, tail_deflate):
 
     return buf.toBytesArray()
 
-print(gz())
+print(generic(2220, 2220, 2220, 2200))
