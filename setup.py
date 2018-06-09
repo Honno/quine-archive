@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 setup(
-    name='quine-archive',
+    name='quine_archive',
     version=0.1,
     description="hmmm",
     long_description="tbd",

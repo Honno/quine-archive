@@ -5,7 +5,7 @@ from datetime import datetime
 import calendar
 
 ## Internal
-import quine_archive.quine_buffer
+from . import buffers
 
 def gz(filename = 'quine'):
     ### Create header data
@@ -54,7 +54,7 @@ def generic(head, tail, head_deflate, tail_deflate):
 
     ### Create self-expanding byte sequence
     ## Initialize buffer and program constants
-    buf = QuineBuffer()
+    buf = buffers.QuineBuffer()
     unit = 5 # size of opcodes in bytes
     incremented_prefix_len = len(head) + unit
     incremented_suffix_len = len(tail) + unit
@@ -125,4 +125,3 @@ def generic(head, tail, head_deflate, tail_deflate):
 
     return buf.toBytesArray()
 
-print(generic(2220, 2220, 2220, 2200))
