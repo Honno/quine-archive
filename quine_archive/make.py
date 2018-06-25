@@ -5,9 +5,12 @@ from datetime import datetime
 import calendar
 
 ## Internal
+from . import flate
 from . import buffers
 
 def gz(filename = 'quine'):
+    """Create a gzip quine"""
+
     ### Create header data
     ## Static member data
     magic_num = 0x1f8b
@@ -47,17 +50,23 @@ def gz(filename = 'quine'):
     ## Create header
     head = bytearray(head)
 
-    return zlib.compress(head)
+    import pdb; pdb.set_trace()
+    ### Create quine data
+    data = _generic(head, '', flate.deflate(head), '')
 
-def generic(head, tail, head_deflate, tail_deflate):
+    ### Write file
+    _write_file(filename, 'gz', data)
+
+def _generic(head, tail, head_deflate, tail_deflate):
     """Implementation of Russ Cox's self-expanding Lempel-Ziv program"""
 
     ### Create self-expanding byte sequence
     ## Initialize buffer and program constants
     buf = buffers.QuineBuffer()
-    unit = 5 # size of opcodes in bytes
-    incremented_prefix_len = len(head) + unit
-    incremented_suffix_len = len(tail) + unit
+    UNIT = 5 # size of opcodes in bytes
+    incremented_prefix_len = len(head) + UNIT
+    incremented_suffix_len = len(tail) + UNIT
+    import pdb; pdb.set_trace()
 
     ## P
     buf.write(head)
@@ -125,3 +134,8 @@ def generic(head, tail, head_deflate, tail_deflate):
 
     return buf.toBytesArray()
 
+def _write_file(name, extension, data):
+    filename = name + '.' + extension
+
+    with open(filename, 'wb') as file:
+        file.write(data)
