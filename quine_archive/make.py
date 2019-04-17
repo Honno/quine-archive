@@ -50,7 +50,6 @@ def gz(filename = 'quine'):
     ## Create header
     head = bytearray(head)
 
-    import pdb; pdb.set_trace()
     ### Create quine data
     data = _generic(head, '', flate.deflate(head), '')
 
@@ -66,7 +65,6 @@ def _generic(head, tail, head_deflate, tail_deflate):
     UNIT = 5 # size of opcodes in bytes
     incremented_prefix_len = len(head) + UNIT
     incremented_suffix_len = len(tail) + UNIT
-    import pdb; pdb.set_trace()
 
     ## P
     buf.write(head)
@@ -80,42 +78,42 @@ def _generic(head, tail, head_deflate, tail_deflate):
     buf.rep(incremented_prefix_len)
 
     ## L[1] R[P+1]
-    buf.lit(unit)
+    buf.lit(UNIT)
     buf.rep(incremented_prefix_len)
 
     ## L[1] L[1]
-    buf.lit(unit)
-    buf.lit(unit)
+    buf.lit(UNIT)
+    buf.lit(UNIT)
 
 	## L[4] R[P+1] L[1] L[1] L[4]
-    buf.lit(4*unit)
+    buf.lit(4*UNIT)
     buf.rep(incremented_prefix_len)
-    buf.lit(unit)
-    buf.lit(unit)
-    buf.lit(4*unit)
+    buf.lit(UNIT)
+    buf.lit(UNIT)
+    buf.lit(4*UNIT)
 
     ## R[4]
-    buf.rep(4*unit)
+    buf.rep(4*UNIT)
 
     ## L[4] R[4] L[4] R[4] L[4]
-    buf.lit(4*unit)
-    buf.rep(4*unit)
-    buf.lit(4*unit)
-    buf.rep(4*unit)
-    buf.lit(4*unit)
+    buf.lit(4*UNIT)
+    buf.rep(4*UNIT)
+    buf.lit(4*UNIT)
+    buf.rep(4*UNIT)
+    buf.lit(4*UNIT)
 
     ## R[4]
-    buf.rep(4*unit)
+    buf.rep(4*UNIT)
 
     ## L[4] R[4] L[0] L[0] L[S+1]
-    buf.lit(4*unit)
-    buf.rep(4*unit)
+    buf.lit(4*UNIT)
+    buf.rep(4*UNIT)
     buf.lit(0)
     buf.lit(0)
     buf.lit(incremented_suffix_len)
 
     ## R[4]
-    buf.rep(4*unit)
+    buf.rep(4*UNIT)
 
     ## L[0] L[0] L[S+1] R[S+1] S
     buf.lit(0)
@@ -123,16 +121,16 @@ def _generic(head, tail, head_deflate, tail_deflate):
     buf.lit(incremented_suffix_len)
     buf.rep(incremented_suffix_len)
     buf.lit(0)
-    buf.write(ztail)
+    buf.write(tail_deflate)
 
     ## R[S+1]
     buf.rep(incremented_suffix_len)
 
     ## S
     buf.lit(0)
-    buf.write(ztail)
+    buf.write(tail_deflate)
 
-    return buf.toBytesArray()
+    return buf.bytes_array()
 
 def _write_file(name, extension, data):
     filename = name + '.' + extension

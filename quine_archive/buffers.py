@@ -79,7 +79,7 @@ class QuineBuffer:
 
         ### Write block
         ## Add everything together
-        data = head.append(body)
+        data = head + body
         data = self._zero_pad(data)
 
         ## Write to buffer
@@ -101,7 +101,7 @@ class QuineBuffer:
         return binary_int_swapped.to_bytes(size, byteorder='big')
 
     def _fixed_code(self, length):
-        """"Find respective fixed Huffman code for given length (RFC section 3.2.6.)"""
+        """"Find respective fixed Huffman code for given length (Deflate RFC 3.2.6)"""
 
         if 0 <= length <= 143:
             literal = 0b00110000 + length
@@ -122,7 +122,7 @@ class QuineBuffer:
         else:
             raise ValueError("Only literal values between 0 and 287 are accepted")
 
-        return bitstring.Bits(uint=literal, length=bits)
+        return bitstring.Bits(uint=int(literal), length=bits)
 
     def _zero_pad(self, binary):
         """Zero pad a given BitArray to byte boundary"""
