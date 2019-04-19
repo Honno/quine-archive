@@ -90,7 +90,7 @@ def _generic(head, tail, head_deflate, tail_deflate):
     buf.lit(UNIT)
     buf.lit(UNIT)
 
-	## L[4] R[P+1] L[1] L[1] L[4]
+    ## L[4] R[P+1] L[1] L[1] L[4]
     buf.lit(4*UNIT)
     buf.rep(incremented_prefix_len)
     buf.lit(UNIT)

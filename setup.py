@@ -1,5 +1,4 @@
-from setuptools import setup, find_packages
-
+from setuptools import setup
 
 setup(
     name='quine_archive',
@@ -9,10 +8,10 @@ setup(
     license='MIT',
     author='Matthew Barber',
     author_email='quitesimplymatt@gmail.com',
-    url='https://github.com/Honno/quine/',
+    url='https://github.com/Honno/quine-archive/',
     classifiers=[
         'Programming Language :: Python :: 3'
     ],
     keywords='quine',
-    packages=find_packages(),
+    packages=['quine_archive'],
 )
